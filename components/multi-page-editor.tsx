@@ -138,10 +138,11 @@ const MultiPageEditor = ({ editor, isFullscreen }: MultiPageEditorProps) => {
               <Button
                 size="sm"
                 variant="ghost"
+                className="px-2"
                 onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                 title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
               >
-                {isSidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                {isSidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4 " />}
               </Button>
             </div>
           </div>
@@ -237,7 +238,7 @@ const MultiPageEditor = ({ editor, isFullscreen }: MultiPageEditorProps) => {
       </div>
 
       {isSidebarCollapsed && (
-        <div className="absolute top-4 left-16 z-10">
+        <div className="hidden">
           <Button size="sm" onClick={addNewPage} title="Add New Page" className="shadow-lg">
             <Plus className="h-4 w-4" />
           </Button>
@@ -247,21 +248,21 @@ const MultiPageEditor = ({ editor, isFullscreen }: MultiPageEditorProps) => {
       {/* Editor Content */}
       <div className="flex-1 flex flex-col">
         <div className="flex-1 overflow-auto">
-          <div className="max-w-4xl mx-auto p-8">
+          <div className="max-w-full mx-auto p-8">
             {/* Page Header */}
-            <div className="mb-6 pb-4 border-b">
+            {/* <div className="mb-6 pb-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">{currentPage?.title}</h2>
               <p className="text-sm text-gray-500 mt-1">
                 Created {currentPage?.createdAt.toLocaleDateString()} • Last updated{" "}
                 {currentPage?.updatedAt.toLocaleString()}
               </p>
-            </div>
+            </div> */}
 
             {/* Editor */}
             <div ref={editorRef} className="min-h-[500px] bg-white shadow-sm border rounded-lg">
               <EditorContent
                 editor={editor}
-                className="prose prose-lg max-w-none p-8 min-h-[500px] focus:outline-none"
+                className="prose prose-lg max-w-none p-2 min-h-[500px] focus:outline-none"
               />
             </div>
 
