@@ -419,10 +419,7 @@ select:focus-visible {
   color: var(--text-color) !important;
 }
 
-/* Enhanced highlight visibility */
-.ProseMirror mark[data-color] {
-  background-color: var(--highlight-color) !important;
-}
+
 
 /* Selection styles for better visibility */
 .ProseMirror::selection {

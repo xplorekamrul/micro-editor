@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { useEditor, EditorContent } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
-import TextAlign from "@tiptap/extension-text-align"
-import TextStyle from "@tiptap/extension-text-style"
-import Color from "@tiptap/extension-color"
-import Highlight from "@tiptap/extension-highlight"
-import FontFamily from "@tiptap/extension-font-family"
-import Superscript from "@tiptap/extension-superscript"
-import Subscript from "@tiptap/extension-subscript"
-import Table from "@tiptap/extension-table"
-import TableRow from "@tiptap/extension-table-row"
-import TableHeader from "@tiptap/extension-table-header"
-import TableCell from "@tiptap/extension-table-cell"
-import { FontSize } from "./font-size-extension"
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
+import TextStyle from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import Highlight from "@tiptap/extension-highlight";
+import FontFamily from "@tiptap/extension-font-family";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableHeader from "@tiptap/extension-table-header";
+import TableCell from "@tiptap/extension-table-cell";
+import { FontSize } from "./font-size-extension";
 
-import EditorToolbar from "./editor-toolbar"
-import { useState } from "react"
-import { MathExtension } from "./math-extension"
+import EditorToolbar from "./editor-toolbar";
+import { useState } from "react";
+import { MathExtension } from "./math-extension";
 
 const RichTextEditor = () => {
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -37,8 +37,10 @@ const RichTextEditor = () => {
         types: ["textStyle"],
       }),
       Color,
-      Highlight.configure({
-        multicolor: true,
+      Highlight.configure({ multicolor: true }).extend({
+        renderHTML({ HTMLAttributes }) {
+          return ["mark", HTMLAttributes, 0];
+        },
       }),
       FontFamily.configure({
         types: ["textStyle"],
@@ -108,23 +110,35 @@ const RichTextEditor = () => {
     `,
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[500px] p-4",
+        class:
+          "prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[500px] p-4",
       },
     },
-  })
+  });
 
   if (!editor) {
-    return null
+    return null;
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
-      <EditorToolbar editor={editor} isFullscreen={isFullscreen} setIsFullscreen={setIsFullscreen} />
+    <div
+      className={`bg-white rounded-lg shadow-lg ${
+        isFullscreen ? "fixed inset-0 z-50" : ""
+      }`}
+    >
+      <EditorToolbar
+        editor={editor}
+        isFullscreen={isFullscreen}
+        setIsFullscreen={setIsFullscreen}
+      />
       <div className={`border-t ${isFullscreen ? "h-full overflow-auto" : ""}`}>
-        <EditorContent editor={editor} className={isFullscreen ? "h-full" : "min-h-[600px]"} />
+        <EditorContent
+          editor={editor}
+          className={isFullscreen ? "h-full" : "min-h-[600px]"}
+        />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default RichTextEditor
+export default RichTextEditor;

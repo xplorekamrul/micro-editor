@@ -1,19 +1,23 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Separator } from "@/components/ui/separator"
-import { ChevronDown, Type, Highlighter } from "lucide-react"
-import type { Editor } from "@tiptap/react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { ChevronDown, Type, Highlighter } from "lucide-react";
+import type { Editor } from "@tiptap/react";
 
 interface WordLikeColorToolbarProps {
-  editor: Editor
+  editor: Editor;
 }
 
 const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
-  const [showTextColorPicker, setShowTextColorPicker] = useState(false)
-  const [showHighlightPicker, setShowHighlightPicker] = useState(false)
+  const [showTextColorPicker, setShowTextColorPicker] = useState(false);
+  const [showHighlightPicker, setShowHighlightPicker] = useState(false);
 
   // Standard Word-like color palette
   const themeColors = [
@@ -29,7 +33,7 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
     { name: "Blue", color: "#0070C0" },
     { name: "Dark Blue", color: "#002060" },
     { name: "Purple", color: "#7030A0" },
-  ]
+  ];
 
   const standardColors = [
     "#C00000",
@@ -56,7 +60,7 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
     "#800000",
     "#008000",
     "#000080",
-  ]
+  ];
 
   const recentColors = [
     "#FF6B6B",
@@ -69,7 +73,7 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
     "#F7DC6F",
     "#BB8FCE",
     "#85C1E9",
-  ]
+  ];
 
   const highlightColors = [
     { name: "No Color", color: "transparent" },
@@ -88,29 +92,52 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
     { name: "Gray 50%", color: "#808080" },
     { name: "Gray 25%", color: "#C0C0C0" },
     { name: "Black", color: "#000000" },
-  ]
+  ];
 
   const applyTextColor = (color: string) => {
-    editor.chain().focus().setColor(color).run()
-    setShowTextColorPicker(false)
-  }
+    editor.chain().focus().setColor(color).run();
+    setShowTextColorPicker(false);
+  };
 
   const applyHighlight = (color: string) => {
-    if (color === "transparent") {
-      editor.chain().focus().unsetHighlight().run()
-    } else {
-      editor.chain().focus().setHighlight({ color }).run()
+    if (!editor) {
+      console.warn("Editor instance is not available.");
+      return;
     }
-    setShowHighlightPicker(false)
-  }
+
+    console.log("Applying highlight with color:", color);
+
+    const chain = editor.chain().focus();
+
+    // Log current attributes before change
+    console.log("Before highlight:", editor.getAttributes("highlight"));
+
+    // Clear conflicting styles
+    chain.unsetColor().unsetHighlight();
+
+    if (color !== "transparent") {
+      chain.setHighlight({ color });
+    } else {
+      chain.unsetHighlight();
+    }
+
+    const success = chain.run();
+
+    console.log("Highlight applied:", success);
+    console.log("After highlight:", editor.getAttributes("highlight"));
+
+    setShowHighlightPicker(false);
+  };
 
   const getCurrentTextColor = () => {
-    return editor.getAttributes("textStyle").color || "#000000"
-  }
+    return editor.getAttributes("textStyle").color || "#000000";
+  };
 
   const getCurrentHighlightColor = () => {
-    return editor.getAttributes("highlight").color || "transparent"
-  }
+    const color = editor.getAttributes("highlight").color || "transparent";
+    console.log("Current highlight color detected:", color);
+    return color;
+  };
 
   return (
     <div className="flex items-center gap-1">
@@ -125,12 +152,23 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
         >
           <div className="flex flex-col items-center">
             <Type className="h-4 w-4" />
-            <div className="w-4 h-1 mt-0.5" style={{ backgroundColor: getCurrentTextColor() }} />
+            <div
+              className="w-4 h-1 mt-0.5"
+              style={{ backgroundColor: getCurrentTextColor() }}
+            />
           </div>
         </Button>
-        <Popover open={showTextColorPicker} onOpenChange={setShowTextColorPicker}>
+        <Popover
+          open={showTextColorPicker}
+          onOpenChange={setShowTextColorPicker}
+        >
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="px-1 border-l-0 rounded-l-none" title="More Text Colors">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="px-1 border-l-0 rounded-l-none"
+              title="More Text Colors"
+            >
               <ChevronDown className="h-3 w-3" />
             </Button>
           </PopoverTrigger>
@@ -201,9 +239,15 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() =>
-            applyHighlight(getCurrentHighlightColor() === "transparent" ? "#FFFF00" : getCurrentHighlightColor())
-          }
+          onClick={() => {
+            const targetColor =
+              getCurrentHighlightColor() === "transparent"
+                ? "#FFFF00"
+                : getCurrentHighlightColor();
+
+            console.log("🔸 Highlight button clicked - applying:", targetColor);
+            applyHighlight(targetColor);
+          }}
           className="px-2 border-r-0 rounded-r-none"
           title="Text Highlight Color"
         >
@@ -212,14 +256,25 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
             <div
               className="w-4 h-1 mt-0.5"
               style={{
-                backgroundColor: getCurrentHighlightColor() === "transparent" ? "#FFFF00" : getCurrentHighlightColor(),
+                backgroundColor:
+                  getCurrentHighlightColor() === "transparent"
+                    ? "#FFFF00"
+                    : getCurrentHighlightColor(),
               }}
             />
           </div>
         </Button>
-        <Popover open={showHighlightPicker} onOpenChange={setShowHighlightPicker}>
+        <Popover
+          open={showHighlightPicker}
+          onOpenChange={setShowHighlightPicker}
+        >
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="sm" className="px-1 border-l-0 rounded-l-none" title="More Highlight Colors">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="px-1 border-l-0 rounded-l-none"
+              title="More Highlight Colors"
+            >
               <ChevronDown className="h-3 w-3" />
             </Button>
           </PopoverTrigger>
@@ -234,12 +289,17 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
                       colorItem.color === "transparent" ? "bg-white" : ""
                     }`}
                     style={{
-                      backgroundColor: colorItem.color === "transparent" ? "white" : colorItem.color,
+                      backgroundColor:
+                        colorItem.color === "transparent"
+                          ? "white"
+                          : colorItem.color,
                     }}
                     onClick={() => applyHighlight(colorItem.color)}
                     title={colorItem.name}
                   >
-                    {colorItem.color === "transparent" && <span className="text-xs text-red-500">✕</span>}
+                    {colorItem.color === "transparent" && (
+                      <span className="text-xs text-red-500">✕</span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -248,7 +308,7 @@ const WordLikeColorToolbar = ({ editor }: WordLikeColorToolbarProps) => {
         </Popover>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default WordLikeColorToolbar
+export default WordLikeColorToolbar;

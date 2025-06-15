@@ -1,32 +1,32 @@
-"use client"
+"use client";
 
-import { useEditor } from "@tiptap/react"
-import StarterKit from "@tiptap/starter-kit"
-import TextAlign from "@tiptap/extension-text-align"
-import TextStyle from "@tiptap/extension-text-style"
-import Color from "@tiptap/extension-color"
-import Highlight from "@tiptap/extension-highlight"
-import FontFamily from "@tiptap/extension-font-family"
-import Superscript from "@tiptap/extension-superscript"
-import Subscript from "@tiptap/extension-subscript"
-import Underline from "@tiptap/extension-underline"
-import Table from "@tiptap/extension-table"
-import TableRow from "@tiptap/extension-table-row"
-import TableHeader from "@tiptap/extension-table-header"
-import TableCell from "@tiptap/extension-table-cell"
-import Image from "@tiptap/extension-image"
-import ListItem from "@tiptap/extension-list-item"
-import { FontSize } from "./font-size-extension"
-import { MathExtension } from "./math-extension"
-import { IndentExtension } from "./indent-extension"
+import { useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
+import TextStyle from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import Highlight from "@tiptap/extension-highlight";
+import FontFamily from "@tiptap/extension-font-family";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import Underline from "@tiptap/extension-underline";
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableHeader from "@tiptap/extension-table-header";
+import TableCell from "@tiptap/extension-table-cell";
+import Image from "@tiptap/extension-image";
+import ListItem from "@tiptap/extension-list-item";
+import { FontSize } from "./font-size-extension";
+import { MathExtension } from "./math-extension";
+import { IndentExtension } from "./indent-extension";
 
-import EnhancedEditorToolbar from "./enhanced-editor-toolbar"
-import MultiPageEditor from "./multi-page-editor"
-import ErrorBoundary from "./error-boundary"
-import { useState } from "react"
+import EnhancedEditorToolbar from "./enhanced-editor-toolbar";
+import MultiPageEditor from "./multi-page-editor";
+import ErrorBoundary from "./error-boundary";
+import { useState } from "react";
 
 const EnhancedRichTextEditor = () => {
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -54,12 +54,12 @@ const EnhancedRichTextEditor = () => {
       Color.configure({
         types: ["textStyle"],
       }),
-      Highlight.configure({
-        multicolor: true,
-        HTMLAttributes: {
-          class: "highlight",
+      Highlight.configure({ multicolor: true }).extend({
+        renderHTML({ HTMLAttributes }) {
+          return ["mark", HTMLAttributes, 0];
         },
       }),
+
       FontFamily.configure({
         types: ["textStyle"],
       }),
@@ -158,27 +158,24 @@ const EnhancedRichTextEditor = () => {
           if (event.ctrlKey || event.metaKey) {
             switch (event.key) {
               case "s":
-                event.preventDefault()
-                return true
+                event.preventDefault();
+                return true;
               case "z":
                 if (event.shiftKey) {
-                  event.preventDefault()
-                  editor?.chain().focus().redo().run()
+                  event.preventDefault();
+                  editor?.chain().focus().redo().run();
                 } else {
-                  event.preventDefault()
-                  editor?.chain().focus().undo().run()
+                  event.preventDefault();
+                  editor?.chain().focus().undo().run();
                 }
-                return true
+                return true;
             }
           }
-          return false
+          return false;
         },
       },
     },
-    onError: (error) => {
-      console.error("Editor error:", error)
-    },
-  })
+  });
 
   if (!editor) {
     return (
@@ -188,19 +185,29 @@ const EnhancedRichTextEditor = () => {
           <p className="text-gray-600">Loading Microsoft Word-like Editor...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <ErrorBoundary>
-      <div className={`bg-white rounded-lg shadow-lg ${isFullscreen ? "fixed inset-0 z-50" : ""}`}>
-        <EnhancedEditorToolbar editor={editor} isFullscreen={isFullscreen} setIsFullscreen={setIsFullscreen} />
-        <div className={`border-t ${isFullscreen ? "h-full overflow-hidden" : ""}`}>
+      <div
+        className={`bg-white rounded-lg shadow-lg ${
+          isFullscreen ? "fixed inset-0 z-50" : ""
+        }`}
+      >
+        <EnhancedEditorToolbar
+          editor={editor}
+          isFullscreen={isFullscreen}
+          setIsFullscreen={setIsFullscreen}
+        />
+        <div
+          className={`border-t ${isFullscreen ? "h-full overflow-hidden" : ""}`}
+        >
           <MultiPageEditor editor={editor} isFullscreen={isFullscreen} />
         </div>
       </div>
     </ErrorBoundary>
-  )
-}
+  );
+};
 
-export default EnhancedRichTextEditor
+export default EnhancedRichTextEditor;
